@@ -1,0 +1,4 @@
+torch
+torchvision
+visdom
+pytorch-lightning>=2.2
