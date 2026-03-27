@@ -30,6 +30,16 @@ class SimpleCNN(nn.Module):
         return self.classifier(x)
 
 
+def grad_norm(model: nn.Module) -> float:
+    total_sq_norm = 0.0
+    for p in model.parameters():
+        if p.grad is None:
+            continue
+        param_norm = p.grad.detach().data.norm(2)
+        total_sq_norm += float(param_norm.item() ** 2)
+    return total_sq_norm ** 0.5
+
+
 def evaluate(model: nn.Module, loader: DataLoader, device: torch.device) -> float:
     model.eval()
     correct = 0
@@ -75,6 +85,7 @@ def main() -> None:
         )
 
     loss_win = None
+    grad_win = None
     acc_win = None
     step = 0
 
@@ -88,6 +99,8 @@ def main() -> None:
             logits = model(images)
             loss = criterion(logits, labels)
             loss.backward()
+
+            grad_value = grad_norm(model)
             optimizer.step()
 
             running_loss += loss.item()
@@ -102,6 +115,15 @@ def main() -> None:
                 )
             else:
                 viz.line(X=[x_value], Y=[loss_value], win=loss_win, update="append")
+
+            if grad_win is None:
+                grad_win = viz.line(
+                    X=[x_value],
+                    Y=[grad_value],
+                    opts={"title": "Grad Norm", "xlabel": "Step", "ylabel": "L2 Norm"},
+                )
+            else:
+                viz.line(X=[x_value], Y=[grad_value], win=grad_win, update="append")
 
             step += 1
 
