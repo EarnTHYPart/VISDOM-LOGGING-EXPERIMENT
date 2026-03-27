@@ -7,3 +7,5 @@ venv/
 data/
 *.log
 visdom/
+logs/
+jsonl/
