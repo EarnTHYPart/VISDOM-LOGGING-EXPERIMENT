@@ -61,11 +61,12 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--visdom-server", type=str, default="http://localhost")
     parser.add_argument("--visdom-port", type=int, default=8097)
     args = parser.parse_args()
 
-    torch.manual_seed(42)
+    torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     transform = transforms.ToTensor()
